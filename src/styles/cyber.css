@@ -1,0 +1,401 @@
+/*
+ * Cyber Hazard skin, loaded last.
+ *
+ *   palette     deep navy #0a0a0a · electric violet #ff003c · aqua #fcee0a · mist #f2f2f2
+ *   motion      cinematic reveals: clip-path wipes for headings, cards and photos
+ *   hover       3D tilt cards with a cursor-following glare
+ *   atmosphere  slow mesh-gradient cyber blobs behind the hero and section bands
+ *   type        gradient-filled display headings with a slow shimmer
+ *
+ * Visual only: no layout, sizes, content or order change. Colours are remapped at build time
+ * (scripts/variants/cyber.mjs); this file styles with the surface-aware variables that step
+ * maintains (--cy-fg, --cy-accent, --cy-line, --cy-glow, ...). Classes prefixed cy- are added
+ * by scripts/cyber.js.
+ */
+
+:root {
+  --cy-void: #050505;
+  --cy-navy: #0a0a0a;
+  --cy-navy2: #121212;
+  --cy-violet: #ff003c;
+  --cy-violet-hi: #ff4d6d;
+  --cy-aqua: #fcee0a;
+  --cy-mist: #f2f2f2;
+
+  --cy-accent: #fcee0a;
+  --cy-accent2: #fff79a;
+  --cy-white: #f2f2f2;
+  --cy-fg: #f2f2f2;
+  --cy-fg2: #cfcfcf;
+  --cy-muted: #8f8f8f;
+  --cy-deep: #00f0ff;
+  --cy-hot: #ff4d6d;
+  --cy-line: rgba(242, 242, 242, .14);
+  --cy-line2: rgba(242, 242, 242, .3);
+  --cy-glow: #ff003c;
+
+  --cy-ease: cubic-bezier(.16, 1, .3, 1);       /* long, cinematic settle */
+  --cy-ease-io: cubic-bezier(.65, 0, .35, 1);
+  --cy-heading-grad: linear-gradient(100deg, #f2f2f2 0%, #00f0ff 20%, #fcee0a 46%, #ff4d6d 72%, #f2f2f2 100%);
+}
+
+/* ---------- base ---------------------------------------------------------- */
+html { scrollbar-color: var(--cy-violet) var(--cy-void); color-scheme: dark; }
+body { background-color: var(--cy-navy); color: var(--cy-fg); }
+
+::selection { background: rgba(255, 0, 60, .55); color: #fff; }
+
+:focus-visible { outline: 2px solid var(--cy-aqua) !important; outline-offset: 3px; }
+
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--cy-void); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--cy-violet), var(--cy-aqua));
+  border: 3px solid var(--cy-void); border-radius: 12px;
+}
+
+hr { border-color: var(--cy-line) !important; }
+
+/* ---------- typography: gradient display headings -------------------------- */
+/* .cy-grad is set only on large headings whose own text is light, so accent words keep their colour */
+/* --cy-gw / --cy-gx / --cy-gt (set by cyber.js) lay one gradient across the whole heading;
+   the registered --cy-shift slides it so every word shimmers together */
+@property --cy-shift { syntax: '<length>'; inherits: false; initial-value: 0px; }
+.cy-grad {
+  background-image: var(--cy-heading-grad) !important;
+  background-size: var(--cy-gw, 260%) 100% !important;
+  background-position: calc(var(--cy-gx, 0px) - var(--cy-shift)) 50% !important;
+  background-repeat: no-repeat !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;          /* accent words set their own colour and stay solid */
+  text-shadow: none !important;
+}
+.cy-grad.cy-live { animation: cy-shimmer 14s var(--cy-ease-io) infinite alternate; }
+@keyframes cy-shimmer { from { --cy-shift: 0px; } to { --cy-shift: var(--cy-gt, 0px); } }
+
+blockquote { border-left-color: var(--cy-violet) !important; }
+
+/* body-copy links: aqua underline that brightens */
+.cy-prose-link {
+  text-decoration-color: color-mix(in srgb, var(--cy-accent) 55%, transparent) !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 3px;
+  transition: color .25s var(--cy-ease), text-decoration-color .25s var(--cy-ease), text-shadow .25s;
+}
+.cy-prose-link:hover {
+  color: var(--cy-accent) !important;
+  text-decoration-color: var(--cy-accent) !important;
+  text-shadow: 0 0 14px rgba(252, 238, 10, .45);
+}
+
+/* ---------- buttons: glow lighting ---------------------------------------- */
+.cy-btn,
+#hwnav .hw-btn,
+.elementor-button,
+.hs-button,
+input[type="submit"],
+button[type="submit"] {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 10px 28px -12px var(--cy-glow) !important;
+  transition: box-shadow .35s var(--cy-ease), filter .35s var(--cy-ease), translate .35s var(--cy-ease), background-color .25s, color .25s !important;
+}
+.cy-btn:hover,
+#hwnav .hw-btn:hover,
+.elementor-button:hover,
+.hs-button:hover,
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+  translate: 0 -2px;
+  filter: brightness(1.1) saturate(1.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 0 0 1px color-mix(in srgb, var(--cy-glow) 60%, transparent),
+    0 16px 38px -10px var(--cy-glow), 0 0 40px -6px color-mix(in srgb, var(--cy-glow) 55%, transparent) !important;
+}
+.cy-btn:active,
+.elementor-button:active,
+.hs-button:active,
+input[type="submit"]:active,
+button[type="submit"]:active { translate: 0 0; filter: brightness(.96); transition-duration: .08s !important; }
+/* arrow / icon inside a button glides on hover */
+.cy-btn svg, .cy-btn i, .elementor-button svg, .elementor-button i { transition: translate .35s var(--cy-ease); }
+.cy-btn:hover svg, .cy-btn:hover i, .elementor-button:hover svg, .elementor-button:hover i { translate: 3px 0; }
+
+/* pills / tags */
+.cy-pill { transition: box-shadow .3s var(--cy-ease), border-color .3s, color .3s, background-color .3s; }
+a.cy-pill:hover, button.cy-pill:hover {
+  box-shadow: 0 0 0 1px rgba(252, 238, 10, .55), 0 0 18px -4px rgba(252, 238, 10, .6) !important;
+}
+
+/* ---------- form fields ----------------------------------------------------- */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="file"]):not([type="image"]),
+textarea,
+select { transition: box-shadow .3s var(--cy-ease), border-color .3s; caret-color: var(--cy-aqua); }
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="file"]):not([type="image"]):focus,
+textarea:focus,
+select:focus {
+  outline: 0 !important;
+  border-color: var(--cy-aqua) !important;
+  box-shadow: 0 0 0 3px rgba(252, 238, 10, .18), 0 0 24px -6px rgba(252, 238, 10, .5) !important;
+}
+input::placeholder, textarea::placeholder { color: rgba(242, 242, 242, .45); }
+
+/* ---------- cards: depth + 3D tilt ------------------------------------------ */
+.cy-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 18px 40px -28px rgba(0, 0, 0, .9);
+  transition: box-shadow .5s var(--cy-ease), border-color .4s, transform .7s var(--cy-ease);
+}
+.cy-card.cy-hot:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 0 0 1px rgba(255, 0, 60, .45),
+    0 30px 60px -24px rgba(255, 0, 60, .55), 0 0 60px -20px rgba(252, 238, 10, .35) !important;
+}
+/* while tilting, the card follows the pointer quickly and a glare tracks it */
+.cy-card.cy-tilting { transition: box-shadow .5s var(--cy-ease), border-color .4s, transform .12s linear; will-change: transform; }
+.cy-card.cy-glare.cy-tilting {
+  background-image: radial-gradient(560px circle at var(--cy-mx, 50%) var(--cy-my, 50%), rgba(255, 77, 109, .2), rgba(252, 238, 10, .06) 35%, transparent 60%) !important;
+}
+
+/* photos: soft lift on hover */
+.cy-img { transition: filter .6s var(--cy-ease); }
+a:hover .cy-img, .cy-img:hover { filter: saturate(1.12) brightness(1.05); }
+
+/* post-loop cards: titles follow the card surface */
+.e-loop-item .elementor-heading-title { color: var(--cy-fg); }
+
+/* sections drawn over light photography keep navy ink (set by cyber.js after sampling the image) */
+.cy-lightzone {
+  --cy-fg: #0a0a0a !important; --cy-fg2: #1a1a1a !important; --cy-white: #0a0a0a !important; --cy-muted: #4a4a4a !important;
+  --cy-accent: #d10032 !important; --cy-accent2: #b0002a !important; --cy-deep: #5a0016 !important; --cy-hot: #d10032 !important;
+  --cy-line: rgba(10, 10, 10, .18) !important; --cy-line2: rgba(10, 10, 10, .35) !important; --cy-glow: #ff003c !important;
+}
+
+/* dark logos / line-art on transparent backgrounds are lifted onto the night sky */
+.cy-inv { filter: invert(1) hue-rotate(180deg) brightness(1.05) !important; }
+.cy-inv-force { filter: brightness(0) invert(.94) !important; }
+
+/* ---------- site chrome ------------------------------------------------------- */
+#hwnav .hw-bar { box-shadow: 0 1px 0 rgba(255, 0, 60, .28), 0 12px 40px -24px rgba(255, 0, 60, .6) !important; }
+#hwnav .hw-trigger, #hwnav .hw-list > li > a { transition: color .25s, text-shadow .25s; }
+#hwnav .hw-trigger:hover, #hwnav .hw-list > li > a:hover,
+#hwnav .hw-trigger[aria-expanded="true"] {
+  color: var(--cy-mist) !important;
+  text-shadow: 0 0 16px rgba(252, 238, 10, .55);
+}
+#hwnav .hw-panel {
+  box-shadow: 0 0 0 1px rgba(255, 0, 60, .3), 0 40px 80px -30px rgba(0, 0, 0, .9), 0 0 90px -40px rgba(255, 0, 60, .7) !important;
+}
+#hwnav .hw-link, #hwnav .hw-mlink { transition: translate .35s var(--cy-ease), color .2s; }
+#hwnav .hw-link:hover, #hwnav .hw-mlink:hover { translate: 4px 0; }
+
+.hw-ann { box-shadow: inset 0 -1px 0 rgba(255, 0, 60, .35); }
+.hwf-col-list a { transition: translate .35s var(--cy-ease), color .2s, text-shadow .2s; }
+.hwf-col-list a:hover { translate: 4px 0; color: var(--cy-aqua) !important; text-shadow: 0 0 14px rgba(252, 238, 10, .5); }
+.hwf-soc { transition: box-shadow .35s var(--cy-ease), color .2s; }
+.hwf-soc:hover { box-shadow: 0 0 0 1px rgba(252, 238, 10, .6), 0 0 22px -4px rgba(252, 238, 10, .7); color: var(--cy-aqua) !important; }
+
+/* trust strip: logos always render light on the dark skin */
+html body .hwts.hwts.hwts[data-theme="light"] {
+  --hwts-logo-filter: brightness(0) invert(1) !important;
+  --hwts-line: rgba(242, 242, 242, .12) !important;
+}
+
+
+/* ---------- cinematic reveals ---------------------------------------------------- */
+/* elements wait hidden, then a mask wipes them open */
+.cy-wait { opacity: 0 !important; }
+.cy-in { animation-duration: 1.05s; animation-timing-function: var(--cy-ease); animation-fill-mode: both; animation-delay: var(--cy-d, 0ms); }
+.cy-in.cy-fx-wipe { animation-name: cy-wipe; }                            /* headings: left-to-right curtain */
+.cy-in.cy-fx-lift { animation-name: cy-lift; animation-duration: .95s; }  /* cards: rise out of a bottom slit */
+.cy-in.cy-fx-iris { animation-name: cy-iris; animation-duration: 1.2s; }  /* photos: open from centre, settle from zoom */
+
+@keyframes cy-wipe {
+  from { opacity: 0; clip-path: inset(-10% 100% -10% 0); translate: -18px 0; }
+  35%  { opacity: 1; }
+  to   { opacity: 1; clip-path: inset(-10% -2% -10% 0); translate: 0 0; }
+}
+@keyframes cy-lift {
+  from { opacity: 0; clip-path: inset(100% 0 0 0 round 14px); translate: 0 46px; }
+  to   { opacity: 1; clip-path: inset(-20% -20% -20% -20%); translate: 0 0; }
+}
+@keyframes cy-iris {
+  from { opacity: 0; clip-path: inset(18% 18% 18% 18% round 18px); scale: 1.08; filter: brightness(1.6) saturate(.4); }
+  to   { opacity: 1; clip-path: inset(0 0 0 0 round 0); scale: 1; filter: none; }
+}
+
+/* hero headline: the curtain passes once on load */
+.cy-hero-sweep { animation: cy-sweep 1.6s var(--cy-ease) both; }
+@keyframes cy-sweep {
+  from { clip-path: inset(-10% 100% -10% 0); opacity: 0; }
+  to   { clip-path: inset(-10% -2% -10% 0); opacity: 1; }
+}
+
+/* ---------- cyber mesh (injected, aria-hidden, non-interactive) ------------------ */
+.cy-sky {
+  position: absolute; top: 0; left: 0; width: 100%; height: 0;
+  pointer-events: none; z-index: 4; overflow: visible;
+  mix-blend-mode: screen;
+}
+.cy-sky.cy-sky-fixed { position: fixed; height: 100vh; overflow: hidden; }
+.cy-sky-band { position: absolute; left: 0; width: 100%; overflow: hidden; pointer-events: none; }
+.cy-blob {
+  position: absolute; display: block; pointer-events: none;
+  width: var(--w, 60vw); height: var(--w, 60vw); border-radius: 50%;
+  background: radial-gradient(closest-side, var(--c, rgba(255, 0, 60, .32)), transparent 72%);
+  opacity: var(--o, .9);
+  will-change: transform;
+  animation: cy-drift var(--t, 22s) ease-in-out infinite alternate;
+  animation-delay: var(--dl, 0s);
+}
+.cy-off .cy-blob { animation-play-state: paused; }
+@keyframes cy-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(var(--dx, 8vw), var(--dy, -4vw), 0) scale(1.18); }
+  100% { transform: translate3d(calc(var(--dx, 8vw) * -.6), calc(var(--dy, -4vw) * -1), 0) scale(.92); }
+}
+
+/* scroll progress: a thin cyber line */
+.cy-progress {
+  position: fixed; left: 0; top: 0; height: 3px; width: 100%; z-index: 2147483000;
+  background: linear-gradient(90deg, var(--cy-violet), var(--cy-aqua), var(--cy-violet-hi));
+  transform-origin: 0 50%; transform: scaleX(var(--cy-progress, 0));
+  box-shadow: 0 0 12px rgba(252, 238, 10, .8), 0 0 2px rgba(255, 255, 255, .6); pointer-events: none;
+}
+
+/* ---------- small screens ------------------------------------------------------- */
+@media (max-width: 767px) {
+  .cy-blob { --w: 120vw !important; }
+  @keyframes cy-lift { from { opacity: 0; clip-path: inset(100% 0 0 0 round 12px); translate: 0 28px; } to { opacity: 1; clip-path: inset(-20% -20% -20% -20%); translate: 0 0; } }
+}
+
+/* ---------- motion preferences / print ------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .cy-in, .cy-blob, .cy-grad.cy-live, .cy-hero-sweep { animation: none !important; }
+  .cy-wait { opacity: 1 !important; }
+  .cy-card, .cy-btn, .cy-img, .cy-pill { transition: none !important; }
+}
+@media print {
+  .cy-sky, .cy-progress { display: none !important; }
+  .cy-wait { opacity: 1 !important; }
+  .cy-grad { color: #0a0a0a !important; -webkit-text-fill-color: #0a0a0a; background: none !important; }
+}
+
+/* =====================================================================================
+ * Cyber Hazard effects. These override the shared dark base above; everything is paint only
+ * (opacity, clip-path, filters, shadows, backgrounds, fixed decorative layers), so no box changes size or place.
+ *   type        headings glitch in with slice cuts and glitch again on hover
+ *   motion      photos snap into focus from a red / cyan split; cards slide in
+ *   hover       HUD corner brackets on cards; hazard stripes slide across buttons
+ *   cursor      a crosshair reticle that turns red over links; target-lock brackets on click
+ *   atmosphere  a laser scan line sweeping down the screen over a faint tech grid
+ * ===================================================================================== */
+:root { --cy-yellow: #fcee0a; --cy-red: #ff003c; --cy-cyan: #00f0ff; }
+::selection { background: #fcee0a; color: #0a0a0a; }
+.cy-sky { display: none !important; }
+.cy-card.cy-glare.cy-tilting { background-image: none !important; }
+
+/* type: glitch-in headings (slice cuts) and glitch on hover */
+@keyframes cy-wipe {
+  0%   { opacity: 0; clip-path: inset(0 0 100% 0); }
+  10%  { opacity: 1; clip-path: inset(10% 0 60% 0); translate: -8px 0; text-shadow: -3px 0 rgba(255, 0, 60, .9), 3px 0 rgba(0, 240, 255, .9); }
+  20%  { clip-path: inset(50% 0 20% 0); translate: 6px 0; }
+  30%  { clip-path: inset(0 0 70% 0); translate: -4px 0; }
+  42%  { clip-path: inset(30% 0 0 0); translate: 3px 0; text-shadow: 2px 0 rgba(255, 0, 60, .8), -2px 0 rgba(0, 240, 255, .8); }
+  55%  { clip-path: inset(-10% -2% -10% 0); translate: 0 0; }
+  70%  { text-shadow: -1px 0 rgba(255, 0, 60, .5), 1px 0 rgba(0, 240, 255, .5); }
+  100% { opacity: 1; clip-path: inset(-10% -2% -10% 0); translate: 0 0; text-shadow: none; }
+}
+@keyframes cy-sweep {
+  0%   { opacity: 0; clip-path: inset(0 0 100% 0); }
+  15%  { opacity: 1; clip-path: inset(20% 0 40% 0); translate: 10px 0; }
+  30%  { clip-path: inset(0 0 55% 0); translate: -6px 0; }
+  50%  { clip-path: inset(-10% -2% -10% 0); translate: 0 0; }
+  100% { opacity: 1; clip-path: inset(-10% -2% -10% 0); }
+}
+.cy-in.cy-fx-wipe { animation-duration: .9s; animation-timing-function: linear; }
+h1:hover, h2:hover { animation: cy-jitter .35s steps(2, end) 1; }
+@keyframes cy-jitter {
+  0%   { text-shadow: -3px 0 rgba(255, 0, 60, .85), 3px 0 rgba(0, 240, 255, .85); translate: 2px 0; }
+  50%  { text-shadow: 3px 0 rgba(255, 0, 60, .85), -3px 0 rgba(0, 240, 255, .85); translate: -2px 0; }
+  100% { text-shadow: none; translate: 0 0; }
+}
+
+/* motion: cards slide in; photos snap in from an RGB split */
+@keyframes cy-lift {
+  from { opacity: 0; translate: -24px 0; clip-path: inset(0 100% 0 0); }
+  to   { opacity: 1; translate: 0 0; clip-path: inset(-20% -20% -20% -20%); }
+}
+@keyframes cy-iris {
+  0%   { opacity: 0; filter: drop-shadow(-10px 0 0 rgba(255, 0, 60, .8)) drop-shadow(10px 0 0 rgba(0, 240, 255, .8)) contrast(1.6); }
+  40%  { opacity: 1; filter: drop-shadow(-4px 0 0 rgba(255, 0, 60, .6)) drop-shadow(4px 0 0 rgba(0, 240, 255, .6)); }
+  100% { opacity: 1; filter: none; }
+}
+
+/* hover: HUD corner brackets on plain cards (background paint only) */
+.cy-card { transition: box-shadow .25s, border-color .25s; }
+.cy-card.cy-hot:hover { box-shadow: 0 0 0 1px rgba(252, 238, 10, .5), 0 0 30px -8px rgba(252, 238, 10, .45) !important; }
+.cy-card.cy-brackets:hover {
+  background-image:
+    linear-gradient(#fcee0a, #fcee0a), linear-gradient(#fcee0a, #fcee0a),
+    linear-gradient(#fcee0a, #fcee0a), linear-gradient(#fcee0a, #fcee0a),
+    linear-gradient(#fcee0a, #fcee0a), linear-gradient(#fcee0a, #fcee0a),
+    linear-gradient(#fcee0a, #fcee0a), linear-gradient(#fcee0a, #fcee0a) !important;
+  background-size: 18px 2px, 2px 18px, 18px 2px, 2px 18px, 18px 2px, 2px 18px, 18px 2px, 2px 18px !important;
+  background-position: 6px 6px, 6px 6px, right 6px top 6px, right 6px top 6px, 6px bottom 6px, 6px bottom 6px, right 6px bottom 6px, right 6px bottom 6px !important;
+  background-repeat: no-repeat !important;
+}
+
+/* hover: hazard stripes slide across buttons */
+.cy-btn:hover, #hwnav .hw-btn:hover, .elementor-button:hover, .hs-button:hover, input[type="submit"]:hover, button[type="submit"]:hover {
+  background-image: repeating-linear-gradient(-45deg, rgba(0, 0, 0, .16) 0 8px, transparent 8px 16px) !important;
+  background-size: 200% 100% !important;
+  animation: cy-hazard .8s linear infinite;
+  box-shadow: 0 0 0 1px rgba(252, 238, 10, .8), 0 0 22px rgba(252, 238, 10, .45) !important;
+}
+@keyframes cy-hazard { from { background-position: 0 0; } to { background-position: 45px 0; } }
+
+/* cursor reticle, target lock (injected by cyber.js, aria-hidden, non-interactive) */
+.cy-hud { position: fixed; inset: 0; pointer-events: none; z-index: 2147483001; overflow: hidden; }
+.cy-reticle {
+  position: absolute; left: 0; top: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px;
+  border: 1.5px solid rgba(252, 238, 10, .9); border-radius: 50%;
+  background:
+    linear-gradient(rgba(252, 238, 10, .9), rgba(252, 238, 10, .9)) 50% 0 / 1.5px 8px no-repeat,
+    linear-gradient(rgba(252, 238, 10, .9), rgba(252, 238, 10, .9)) 50% 100% / 1.5px 8px no-repeat,
+    linear-gradient(rgba(252, 238, 10, .9), rgba(252, 238, 10, .9)) 0 50% / 8px 1.5px no-repeat,
+    linear-gradient(rgba(252, 238, 10, .9), rgba(252, 238, 10, .9)) 100% 50% / 8px 1.5px no-repeat;
+  opacity: 0; transition: opacity .25s, scale .25s, border-color .2s, rotate .4s;
+}
+.cy-reticle.cy-on { opacity: 1; }
+.cy-reticle.cy-target { scale: 1.5; rotate: 45deg; border-color: rgba(255, 0, 60, .95); }
+.cy-lock {
+  position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px;
+  background:
+    linear-gradient(#ff003c, #ff003c) 0 0 / 14px 2px no-repeat, linear-gradient(#ff003c, #ff003c) 0 0 / 2px 14px no-repeat,
+    linear-gradient(#ff003c, #ff003c) 100% 0 / 14px 2px no-repeat, linear-gradient(#ff003c, #ff003c) 100% 0 / 2px 14px no-repeat,
+    linear-gradient(#ff003c, #ff003c) 0 100% / 14px 2px no-repeat, linear-gradient(#ff003c, #ff003c) 0 100% / 2px 14px no-repeat,
+    linear-gradient(#ff003c, #ff003c) 100% 100% / 14px 2px no-repeat, linear-gradient(#ff003c, #ff003c) 100% 100% / 2px 14px no-repeat;
+  animation: cy-lock .55s steps(5, end) forwards;
+}
+@keyframes cy-lock { from { scale: 2.2; opacity: 1; } 70% { scale: .7; opacity: 1; } to { scale: .7; opacity: 0; } }
+
+/* atmosphere: faint tech grid (html::before) and a laser scan line (html::after).
+   Fixed pseudo-elements: not in the DOM, no layout. */
+html::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 2147481000;
+  background-image: linear-gradient(rgba(252, 238, 10, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(252, 238, 10, .035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%); mask-image: radial-gradient(120% 90% at 50% 40%, #000 30%, transparent 85%);
+}
+html::after {
+  content: ""; position: fixed; left: 0; right: 0; top: 0; height: 2px; pointer-events: none; z-index: 2147482000;
+  background: linear-gradient(90deg, transparent, rgba(252, 238, 10, .9) 20%, rgba(252, 238, 10, .9) 80%, transparent);
+  box-shadow: 0 0 14px 2px rgba(252, 238, 10, .55), 0 0 40px 8px rgba(252, 238, 10, .15);
+  opacity: .55;
+  animation: cy-scan 6s linear infinite;
+}
+@keyframes cy-scan { from { translate: 0 -10px; } to { translate: 0 100vh; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html::after, h1:hover, h2:hover, .cy-btn:hover, .elementor-button:hover { animation: none !important; }
+  html::after { display: none; }
+  .cy-hud { display: none; }
+}
+@media print { html::before, html::after, .cy-hud { display: none !important; } }

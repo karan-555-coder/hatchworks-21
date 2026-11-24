@@ -1,0 +1,24 @@
+{
+  "name": "hatchworks-cyber-hazard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static replica of hatchworks.com, Cyber Hazard colour variant (structure identical to the original).",
+  "scripts": {
+    "crawl": "node scripts/import/crawl.mjs",
+    "extract": "node scripts/import/extract.mjs",
+    "posts": "node scripts/import/posts-index.mjs",
+    "import": "npm run crawl && npm run extract",
+    "build": "node scripts/build.mjs --variant=cyber",
+    "serve": "node scripts/serve.mjs --variant=cyber",
+    "dev": "npm run build && npm run serve",
+    "compare": "node scripts/compare.mjs",
+    "build:original": "node scripts/build.mjs --variant=original",
+    "serve:original": "node scripts/serve.mjs --variant=original",
+    "check:variant": "node scripts/variant-check.mjs --variant=cyber"
+  },
+  "devDependencies": {
+    "cheerio": "1.0.0",
+    "playwright-core": "^1.48.2"
+  }
+}
